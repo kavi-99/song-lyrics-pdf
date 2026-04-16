@@ -14,7 +14,7 @@
     --ink-muted: #9090b0;
     --accent: #c84b31;
     --accent-soft: #f5ede9;
-    --blue: #1e50a0;
+    --female: #c84b31;
     --surface: #ffffff;
     --bg: #f2f0eb;
     --border: #e0ddd5;
@@ -170,6 +170,30 @@
 
   .hint-box strong { font-weight: 600; }
 
+  .hint-box .f-badge {
+    display: inline-block;
+    background: #c84b31;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    vertical-align: middle;
+  }
+
+  .hint-box .m-badge {
+    display: inline-block;
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    vertical-align: middle;
+  }
+
   .divider {
     border: none;
     border-top: 1px solid var(--border);
@@ -293,8 +317,11 @@
     font-size: 14px;
     line-height: 2.15;
     color: #222;
-    white-space: pre-wrap;
     margin-bottom: 6px;
+  }
+
+  .lyric-block .female {
+    color: var(--female);
   }
 
   .section-lbl {
@@ -307,6 +334,33 @@
     margin: 22px 0 16px;
     letter-spacing: 0.05em;
   }
+
+  .voice-legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-bottom: 18px;
+  }
+
+  .voice-legend span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .dot-f { background: var(--female); }
+  .dot-m { background: var(--ink); }
 
   .empty-state {
     text-align: center;
@@ -431,7 +485,7 @@
 
     <div class="field">
       <label>Singer(s)</label>
-      <input type="text" id="f-singers" placeholder="e.g. Lata Mangeshkar">
+      <input type="text" id="f-singers" placeholder="e.g. Lata Mangeshkar, Mohammed Rafi">
     </div>
 
     <hr class="divider">
@@ -442,8 +496,11 @@
     </div>
 
     <div class="hint-box">
-      <strong>Tips:</strong> Leave a blank line between verses.<br>
-      Type <strong>Chorus</strong>, <strong>Interlude</strong>, <strong>Bridge</strong>, etc. alone on its own line to create a section label.
+      <strong>Section labels:</strong> Type <strong>Chorus</strong>, <strong>Bridge</strong>, <strong>Interlude</strong>, <strong>Mukhda</strong>, <strong>Antara</strong>, etc. alone on its own line.<br><br>
+      <strong>Duet voices:</strong><br>
+      Type <span class="f-badge">F</span> or <span class="f-badge">Female</span> on its own line → lyrics below turn <span style="color:var(--female);font-weight:600;">red</span>.<br>
+      Type <span class="m-badge">M</span> or <span class="m-badge">Male</span> on its own line → lyrics return to black.<br><br>
+      Leave a blank line between verses.
     </div>
 
     <div class="btn-group">
@@ -470,7 +527,13 @@
 </div>
 
 <script>
-const SECTION_WORDS = ['interlude','chorus','bridge','verse','intro','outro','pre-chorus','refrain','coda','instrumental'];
+const SECTION_WORDS = [
+  'interlude','chorus','bridge','verse','intro','outro',
+  'pre-chorus','refrain','coda','instrumental',
+  'antara','mukhda','sthayi'
+];
+const FEMALE_TRIGGERS = ['f', 'female'];
+const MALE_TRIGGERS   = ['m', 'male'];
 
 function esc(s){
   return String(s)
@@ -518,15 +581,69 @@ function render(){
   if(body.trim()){
     html += `<div class="deco-line">♪ &nbsp; L Y R I C S &nbsp; ♪</div>`;
 
+    // Check if any voice markers are used — if so, show legend
+    const allLines = body.split('\n');
+    const hasVoiceMarkers = allLines.some(l => {
+      const low = l.trim().toLowerCase();
+      return FEMALE_TRIGGERS.includes(low) || MALE_TRIGGERS.includes(low);
+    });
+
+    // if(hasVoiceMarkers){
+    //   html += `<div class="voice-legend">
+    //     <span><span class="dot dot-f"></span> Female voice</span>
+    //     <span><span class="dot dot-m"></span> Male voice</span>
+    //   </div>`;
+    // }
+
+    let isFemale = false;
+
     const paras = body.split(/\n{2,}/);
     paras.forEach(para => {
       const trimmed = para.trim();
       if(!trimmed) return;
       const lines = trimmed.split('\n').map(l => l.trimEnd());
-      if(lines.length === 1 && SECTION_WORDS.includes(lines[0].trim().toLowerCase())){
-        html += `<div class="section-lbl">— ${esc(lines[0].trim())} —</div>`;
-      } else {
-        html += `<div class="lyric-block">${lines.map(esc).join('\n')}</div><br>`;
+
+      // Single-line paragraph: check for section label or voice marker
+      if(lines.length === 1){
+        const lower = lines[0].trim().toLowerCase();
+        if(SECTION_WORDS.includes(lower)){
+          html += `<div class="section-lbl">— ${esc(lines[0].trim())} —</div>`;
+          return;
+        }
+        if(FEMALE_TRIGGERS.includes(lower)){ isFemale = true; return; }
+        if(MALE_TRIGGERS.includes(lower))  { isFemale = false; return; }
+      }
+
+      // Multi-line (or regular single-line lyric): process line by line
+      let lyricSpans = [];
+
+      lines.forEach(line => {
+        const lower = line.trim().toLowerCase();
+
+        if(FEMALE_TRIGGERS.includes(lower)){
+          isFemale = true;
+          return;
+        }
+        if(MALE_TRIGGERS.includes(lower)){
+          isFemale = false;
+          return;
+        }
+        if(SECTION_WORDS.includes(lower)){
+          // Flush any accumulated lines first
+          if(lyricSpans.length){
+            html += `<div class="lyric-block">${lyricSpans.join('<br>')}</div><br>`;
+            lyricSpans = [];
+          }
+          html += `<div class="section-lbl">— ${esc(line.trim())} —</div>`;
+          return;
+        }
+
+        const cls = isFemale ? ' class="female"' : '';
+        lyricSpans.push(`<span${cls}>${esc(line)}</span>`);
+      });
+
+      if(lyricSpans.length){
+        html += `<div class="lyric-block">${lyricSpans.join('<br>')}</div><br>`;
       }
     });
   }
@@ -543,9 +660,9 @@ function clearForm(){
 
 // Tab switching for mobile
 function switchTab(tab){
-  const formPanel = document.getElementById('formPanel');
+  const formPanel    = document.getElementById('formPanel');
   const previewPanel = document.getElementById('previewPanel');
-  const btns = document.querySelectorAll('.tabs button');
+  const btns         = document.querySelectorAll('.tabs button');
   if(tab === 'form'){
     formPanel.classList.remove('hidden');
     previewPanel.classList.add('hidden');
