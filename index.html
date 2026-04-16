@@ -160,6 +160,29 @@
     border-color: rgba(255,255,255,0.5);
   }
 
+   /* Clear all Fields button in footer */
+  .btn-clear-footer {
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    transition: all 0.15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .btn-clear-footer:hover {
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(1,1,1,0.5);
+  }
+
   /* Palette button for mobile */
   .btn-palette {
     display: none;
@@ -899,7 +922,7 @@
         🖨️ Save / Print as PDF
       </button> -->
       <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-      <button class="btn-print-header" onclick="clearForm()">
+      <button class="btn-clear-footer" onclick="clearForm()">
         🗑 Clear all fields
       </button>
    <!-- </div> -->
@@ -927,17 +950,17 @@
       <div class="toolbar-sep"></div>
 
       <!-- Spacing -->
-      <div class="toolbar-group">
+      <!-- <div class="toolbar-group">
         <span class="toolbar-label">Spacing</span>
         <button class="spacing-btn" onclick="setSpacing('compact', this)" title="Compact">≡</button>
         <button class="spacing-btn active" onclick="setSpacing('normal', this)" title="Normal">☰</button>
         <button class="spacing-btn" onclick="setSpacing('airy', this)" title="Airy">⠿</button>
       </div>
 
-      <div class="toolbar-sep"></div>
+      <div class="toolbar-sep"></div> -->
 
       <!-- Accent color swatches -->
-      <div class="toolbar-group">
+      <!-- <div class="toolbar-group">
         <span class="toolbar-label">Accent</span>
         <button class="swatch active" style="background:#c84b31;" data-color="#c84b31" onclick="setAccent('#c84b31', this)" title="Red"></button>
         <button class="swatch" style="background:#3b5bdb;" data-color="#3b5bdb" onclick="setAccent('#3b5bdb', this)" title="Blue"></button>
@@ -945,7 +968,7 @@
         <button class="swatch" style="background:#2d8a4e;" data-color="#2d8a4e" onclick="setAccent('#2d8a4e', this)" title="Green"></button>
         <button class="swatch" style="background:#1a1a1a;" data-color="#1a1a1a" onclick="setAccent('#1a1a1a', this)" title="Black"></button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Preview panel -->
     <div class="preview-panel" id="previewPanel">
