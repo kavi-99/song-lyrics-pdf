@@ -4,71 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Song Lyrics Maker</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link id="font-base" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ═══ THEME VARIABLES ═══ */
   :root {
-    --ink: #1a1a2e;
-    --ink-soft: #4a4a6a;
-    --ink-muted: #9090b0;
-    --accent: #c84b31;
-    --accent-soft: #f5ede9;
-    --female: #c84b31;
-    --surface: #ffffff;
-    --bg: #f2f0eb;
-    --border: #e0ddd5;
-    --field-bg: #faf9f7;
-    --paper: #ffffff;
-    --page-font: 'Playfair Display', Georgia, serif;
-    --panel-w: 420px;
-    --resizer-x: 420px;
-  }
-
-  /* Classic theme (default) */
-  [data-theme="classic"] {
-    --accent: #c84b31;
-    --accent-soft: #f5ede9;
-    --female: #c84b31;
-    --paper: #fefdfb;
-    --page-font: 'Playfair Display', Georgia, serif;
-  }
-
-  [data-theme="sepia"] {
-    --accent: #7a4f2f;
-    --accent-soft: #f5ede0;
-    --female: #a0522d;
-    --paper: #f4eed8;
-    --bg: #e8e0c8;
-    --border: #c8b898;
-    --field-bg: #f8f2e0;
-    --surface: #faf5e8;
-    --page-font: 'EB Garamond', Georgia, serif;
-  }
-
-  [data-theme="modern"] {
-    --accent: #3b5bdb;
-    --accent-soft: #eef1ff;
-    --female: #3b5bdb;
-    --paper: #ffffff;
-    --bg: #f0f2f5;
-    --border: #dde1e7;
-    --field-bg: #f8f9fa;
-    --surface: #ffffff;
-    --page-font: 'Inter', sans-serif;
-  }
-
-  [data-theme="minimal"] {
-    --accent: #1a1a1a;
-    --accent-soft: #f0f0f0;
-    --female: #1a1a1a;
-    --paper: #ffffff;
-    --bg: #f5f5f5;
-    --border: #e0e0e0;
-    --field-bg: #fafafa;
-    --surface: #ffffff;
-    --page-font: 'Libre Baskerville', Georgia, serif;
+    --ink:        #1a1a2e;
+    --ink-soft:   #4a4a6a;
+    --ink-muted:  #9090b0;
+    --accent:     #c84b31;
+    --accent-soft:#f5ede9;
+    --female:     #c84b31;
+    --surface:    #ffffff;
+    --bg:         #f2f0eb;
+    --border:     #e0ddd5;
+    --field-bg:   #faf9f7;
+    --paper-bg:   #ffffff;
+    --panel-w:    380px;
+    --lyric-font: 'Playfair Display', Georgia, serif;
+    --lyric-size: 14px;
+    --lyric-lh:   2.15;
   }
 
   body {
@@ -76,10 +31,9 @@
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
-    transition: background 0.2s;
   }
 
-  /* ═══ HEADER ═══ */
+  /* ── HEADER ─────────────────────────────────────── */
   header {
     background: var(--ink);
     color: #fff;
@@ -90,116 +44,103 @@
     gap: 12px;
     position: sticky;
     top: 0;
-    z-index: 200;
+    z-index: 100;
   }
 
-  header h1 {
+  .header-title {
     font-family: 'Playfair Display', serif;
     font-size: 17px;
     font-weight: 500;
     letter-spacing: 0.01em;
     color: #fff;
     white-space: nowrap;
-    margin-right: 8px;
+    flex-shrink: 0;
   }
 
-  header h1 span { color: var(--accent); font-style: italic; }
+  .header-title span { color: var(--accent); font-style: italic; }
 
-  /* Theme pills */
   .theme-pills {
     display: flex;
     gap: 5px;
+    align-items: center;
     flex: 1;
+    justify-content: center;
   }
 
   .theme-pill {
-    padding: 5px 11px;
+    padding: 5px 13px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
-    border: 1.5px solid rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,255,255,0.18);
     background: transparent;
     color: rgba(255,255,255,0.55);
     transition: all 0.15s;
     white-space: nowrap;
   }
 
-  .theme-pill:hover {
-    background: rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
-  }
+  .theme-pill:hover { border-color: rgba(255,255,255,0.45); color: #fff; }
 
   .theme-pill.active {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: rgba(255,255,255,0.14);
+    border-color: rgba(255,255,255,0.55);
     color: #fff;
   }
 
-  /* Print button in header */
-  .btn-print-header {
-    padding: 7px 14px;
-    border-radius: 7px;
-    font-size: 12.5px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    transition: all 0.15s;
-    white-space: nowrap;
+  .header-right {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
+    flex-shrink: 0;
   }
 
-  .btn-print-header:hover {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.5);
-  }
-
-   /* Clear all Fields button in footer */
-  .btn-clear-footer {
-    padding: 7px 14px;
-    border-radius: 7px;
-    font-size: 12.5px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
-    color: #000;
-    transition: all 0.15s;
+  .saved-badge {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    opacity: 0;
+    transition: opacity 0.35s;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 5px;
   }
 
-  .btn-clear-footer:hover {
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(1,1,1,0.5);
-  }
+  .saved-badge.show { opacity: 1; }
 
-  /* Palette button for mobile */
-  .btn-palette {
+  .btn-mobile-style {
     display: none;
-    padding: 6px 10px;
-    border-radius: 7px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    color: #fff;
     font-size: 16px;
     cursor: pointer;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    line-height: 1;
-    transition: all 0.15s;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
   }
 
-  .btn-palette:hover { background: rgba(255,255,255,0.2); }
+  .btn-mobile-style:hover { background: rgba(255,255,255,0.2); }
 
-  /* ═══ TABS (mobile) ═══ */
+  .btn-print {
+    padding: 7px 15px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .btn-print:hover { filter: brightness(0.88); }
+
+  /* ── TABS (mobile only) ─────────────────────────── */
   .tabs {
     display: none;
     background: var(--surface);
@@ -220,42 +161,24 @@
     transition: all 0.15s;
   }
 
-  .tabs button.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
+  .tabs button.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* ═══ LAYOUT ═══ */
+  /* ── MAIN LAYOUT ────────────────────────────────── */
   .main {
     display: flex;
     height: calc(100vh - 52px);
-    overflow: hidden;
   }
 
-  /* ═══ RESIZER ═══ */
-  .resizer {
-    width: 5px;
-    background: var(--border);
-    cursor: col-resize;
-    flex-shrink: 0;
-    transition: background 0.15s;
-    position: relative;
-    z-index: 10;
-  }
-
-  .resizer:hover, .resizer.dragging { background: var(--accent); }
-
-  /* ═══ FORM PANEL ═══ */
+  /* ── FORM PANEL ─────────────────────────────────── */
   .form-panel {
+    width: var(--panel-w);
+    flex-shrink: 0;
     background: var(--surface);
+    border-right: 1px solid var(--border);
     overflow-y: auto;
-    padding: 20px 20px 40px;
+    padding: 22px 20px 40px;
     display: flex;
     flex-direction: column;
-    gap: 0;
-    flex-shrink: 0;
-    width: var(--panel-w);
-    transition: background 0.2s;
   }
 
   .section-label {
@@ -279,7 +202,8 @@
     margin-bottom: 4px;
   }
 
-  .field input, .field textarea {
+  .field input,
+  .field textarea {
     width: 100%;
     padding: 9px 11px;
     font-size: 13.5px;
@@ -291,61 +215,54 @@
     transition: border-color 0.15s, background 0.15s;
   }
 
-  .field input:focus, .field textarea:focus {
+  .field input:focus,
+  .field textarea:focus {
     outline: none;
     border-color: var(--accent);
     background: #fff;
   }
 
-  .field input::placeholder, .field textarea::placeholder { color: #c0bdb5; }
+  .field input::placeholder,
+  .field textarea::placeholder { color: #c0bdb5; }
 
   .field textarea {
     font-family: 'DM Mono', monospace;
     font-size: 12.5px;
     line-height: 1.75;
     resize: vertical;
-    min-height: 260px;
+    min-height: 220px;
   }
 
   .row2 { display: grid; grid-template-columns: 1fr 90px; gap: 8px; }
 
-  /* Hint — collapsed to ? icon */
-  .hint-toggle-row {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    margin-top: 8px;
+  .form-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0 4px;
   }
 
+  /* hint */
   .hint-toggle {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: var(--field-bg);
-    color: var(--ink-muted);
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s;
-    flex-shrink: 0;
-  }
-
-  .hint-toggle:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .hint-label {
+    gap: 5px;
+    margin-top: 8px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: none;
     font-size: 11.5px;
+    font-family: 'DM Sans', sans-serif;
     color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    align-self: flex-start;
   }
+
+  .hint-toggle:hover { color: var(--ink-soft); border-color: var(--ink-muted); }
 
   .hint-box {
+    display: none;
     background: var(--accent-soft);
     border: 1px solid #e8c5bb;
     border-radius: 7px;
@@ -353,230 +270,221 @@
     margin-top: 8px;
     font-size: 11.5px;
     color: #7a3020;
-    line-height: 1.6;
-    display: none;
+    line-height: 1.65;
   }
-
-  [data-theme="sepia"] .hint-box { border-color: #c8a878; color: #5a3010; }
-  [data-theme="modern"] .hint-box { border-color: #b0c0ff; color: #2040a0; }
-  [data-theme="minimal"] .hint-box { border-color: #ccc; color: #333; }
 
   .hint-box.open { display: block; }
   .hint-box strong { font-weight: 600; }
 
-  .hint-box .f-badge {
+  .f-badge, .m-badge {
     display: inline-block;
-    background: #c84b31;
-    color: #fff;
     font-size: 10px;
     font-weight: 600;
     padding: 1px 6px;
     border-radius: 4px;
     font-family: 'DM Mono', monospace;
     vertical-align: middle;
-  }
-
-  .hint-box .m-badge {
-    display: inline-block;
-    background: #1a1a2e;
     color: #fff;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-family: 'DM Mono', monospace;
-    vertical-align: middle;
   }
 
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 18px 0 6px;
-  }
+  .f-badge { background: #c84b31; }
+  .m-badge { background: #1a1a2e; }
 
-  /* Bottom of form — clear link */
   .form-footer {
+    margin-top: auto;
+    padding-top: 20px;
     display: flex;
-    align-items: center;
     justify-content: flex-end;
-    margin-top: 14px;
   }
 
-  .btn-clear-link {
+  .btn-clear {
+    font-size: 12px;
+    color: var(--ink-muted);
     background: none;
     border: none;
     font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    color: var(--ink-muted);
     cursor: pointer;
-    padding: 4px 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
     transition: color 0.15s;
+    padding: 4px 0;
   }
 
-  .btn-clear-link:hover { color: var(--accent); }
+  .btn-clear:hover { color: #c84b31; }
 
-  /* Save indicator */
-  .save-indicator {
-    font-size: 11px;
-    color: var(--ink-muted);
-    opacity: 0;
-    transition: opacity 0.3s;
-    margin-right: auto;
-    letter-spacing: 0.02em;
+  /* ── DIVIDER HANDLE ─────────────────────────────── */
+  .divider-handle {
+    width: 5px;
+    flex-shrink: 0;
+    background: var(--border);
+    cursor: col-resize;
+    position: relative;
+    transition: background 0.15s;
   }
 
-  .save-indicator.show { opacity: 1; }
+  .divider-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3px;
+    height: 28px;
+    background: var(--ink-muted);
+    border-radius: 2px;
+    opacity: 0.25;
+    transition: opacity 0.15s;
+  }
 
-  /* ═══ PREVIEW PANEL ═══ */
-  .preview-wrapper {
+  .divider-handle:hover,
+  .divider-handle.dragging { background: var(--accent); }
+
+  .divider-handle:hover::after,
+  .divider-handle.dragging::after { opacity: 0.6; background: #fff; }
+
+  /* ── PREVIEW PANEL ──────────────────────────────── */
+  .preview-panel {
     flex: 1;
+    min-width: 0;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    min-width: 0;
+    transition: background 0.3s;
   }
 
-  /* Style toolbar above preview */
+  /* ── STYLE TOOLBAR ──────────────────────────────── */
   .style-toolbar {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
-    padding: 8px 16px;
+    padding: 0 18px;
+    height: 44px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
     flex-shrink: 0;
-    transition: background 0.2s;
   }
 
-  .toolbar-group {
+  .tb-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
   }
 
-  .toolbar-label {
-    font-size: 10.5px;
+  .tb-label {
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--ink-muted);
+    white-space: nowrap;
   }
 
-  /* Font size stepper */
-  .size-stepper {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    border: 1.5px solid var(--border);
-    border-radius: 7px;
-    overflow: hidden;
-  }
-
-  .size-stepper button {
-    width: 30px;
-    height: 30px;
-    border: none;
-    background: var(--field-bg);
-    color: var(--ink-soft);
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.12s;
-    font-family: 'DM Sans', sans-serif;
-    min-width: 30px;
-  }
-
-  .size-stepper button:hover { background: var(--accent-soft); color: var(--accent); }
-
-  .size-stepper .size-val {
-    min-width: 30px;
-    text-align: center;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--ink);
-    padding: 0 4px;
-    background: var(--surface);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Spacing buttons */
-  .spacing-btn {
-    width: 30px;
-    height: 30px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    background: var(--field-bg);
-    color: var(--ink-soft);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.12s;
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 500;
-  }
-
-  .spacing-btn:hover, .spacing-btn.active {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  /* Accent color swatches */
-  .swatch {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.12s, border-color 0.12s;
-    flex-shrink: 0;
-    outline: none;
-  }
-
-  .swatch:hover { transform: scale(1.2); }
-  .swatch.active { border-color: var(--ink) !important; transform: scale(1.15); }
-
-  .toolbar-sep {
+  .tb-sep {
     width: 1px;
     height: 20px;
     background: var(--border);
     flex-shrink: 0;
   }
 
-  .preview-panel {
+  /* stepper */
+  .stepper {
+    display: flex;
+    align-items: center;
+    background: var(--field-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .stepper button {
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+  }
+
+  .stepper button:hover { background: var(--border); }
+
+  .stepper-val {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 26px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* spacing group */
+  .spacing-group {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .sp-btn {
+    padding: 0 10px;
+    height: 28px;
+    background: var(--field-bg);
+    border: none;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink-muted);
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+
+  .sp-btn:last-child { border-right: none; }
+  .sp-btn.active { background: var(--ink); color: #fff; }
+  .sp-btn:not(.active):hover { background: var(--border); color: var(--ink); }
+
+  /* accent swatches */
+  .swatches { display: flex; gap: 5px; align-items: center; }
+
+  .swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2.5px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.12s, border-color 0.12s;
+  }
+
+  .swatch:hover { transform: scale(1.18); }
+  .swatch.active { border-color: var(--ink); transform: scale(1.1); box-shadow: 0 0 0 1.5px #fff inset; }
+
+  /* ── PREVIEW SCROLL ─────────────────────────────── */
+  .preview-scroll {
     flex: 1;
-    background: var(--bg);
     overflow-y: auto;
     padding: 28px 24px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    transition: background 0.2s;
   }
 
-  /* ═══ SONG PAGE ═══ */
+  /* ── SONG PAGE ──────────────────────────────────── */
   .page {
-    background: var(--paper);
+    background: var(--paper-bg);
     width: 100%;
     max-width: 580px;
     min-height: 800px;
     border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    box-shadow: 0 4px 28px rgba(0,0,0,0.09);
     padding: 48px 52px 64px;
-    font-family: var(--page-font);
-    transition: background 0.25s, font-family 0.1s;
+    font-family: var(--lyric-font);
+    transition: background 0.3s, font-family 0.1s;
   }
 
   .song-date {
@@ -589,13 +497,12 @@
   }
 
   .meta-box {
-    background: var(--accent-soft);
+    background: rgba(0,0,0,0.03);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 14px 16px;
     margin-bottom: 26px;
     font-family: 'DM Sans', sans-serif;
-    transition: background 0.2s;
   }
 
   .meta-box table { width: 100%; border-collapse: collapse; }
@@ -612,9 +519,9 @@
     color: var(--accent);
     width: 60px;
     padding-right: 10px;
-    font-size: 11.5px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
   }
 
   .meta-box td.val { color: var(--ink); }
@@ -631,7 +538,8 @@
     color: var(--ink-muted);
   }
 
-  .deco-line::before, .deco-line::after {
+  .deco-line::before,
+  .deco-line::after {
     content: '';
     flex: 1;
     height: 1px;
@@ -639,8 +547,8 @@
   }
 
   .lyric-block {
-    font-size: var(--lyric-size, 14px);
-    line-height: var(--lyric-spacing, 2.15);
+    font-size: var(--lyric-size);
+    line-height: var(--lyric-lh);
     color: #222;
     margin-bottom: 6px;
   }
@@ -668,18 +576,18 @@
   .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
   .empty-state p { font-size: 13px; line-height: 1.7; }
 
-  /* ═══ MOBILE BOTTOM SHEET ═══ */
-  .sheet-overlay {
+  /* ── BOTTOM SHEET (mobile) ──────────────────────── */
+  .bs-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 300;
+    background: rgba(0,0,0,0.45);
+    z-index: 200;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.25s;
   }
 
-  .sheet-overlay.open { opacity: 1; }
+  .bs-overlay.show { display: block; opacity: 1; }
 
   .bottom-sheet {
     position: fixed;
@@ -687,81 +595,163 @@
     left: 0;
     right: 0;
     background: var(--surface);
-    border-radius: 16px 16px 0 0;
-    padding: 20px 20px 32px;
-    z-index: 301;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 20px 36px;
+    z-index: 201;
     transform: translateY(100%);
-    transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 85vh;
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 82vh;
     overflow-y: auto;
   }
 
-  .bottom-sheet.open { transform: translateY(0); }
+  .bottom-sheet.show { transform: translateY(0); }
 
-  .sheet-handle {
+  .bs-handle {
     width: 36px;
     height: 4px;
     background: var(--border);
     border-radius: 2px;
-    margin: 0 auto 16px;
+    margin: 6px auto 18px;
   }
 
-  .sheet-section-label {
+  .bs-section { margin-bottom: 22px; }
+
+  .bs-lbl {
     font-size: 10px;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-muted);
-    margin: 16px 0 10px;
+    margin-bottom: 10px;
   }
 
-  .sheet-section-label:first-of-type { margin-top: 0; }
-
-  .sheet-theme-grid {
+  .bs-theme-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
-  .sheet-theme-pill {
-    padding: 9px 6px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
+  .bs-theme-btn {
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--field-bg);
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
-    border: 1.5px solid var(--border);
-    background: var(--field-bg);
-    color: var(--ink-soft);
-    text-align: center;
+    text-align: left;
     transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
   }
 
-  .sheet-theme-pill.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+  .bs-theme-btn.active { border-color: var(--accent); background: var(--accent-soft); }
 
-  .sheet-controls-row {
+  .bs-theme-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 7px;
   }
 
-  /* ═══ PRINT ═══ */
+  .bs-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .bs-theme-desc { font-size: 11px; color: var(--ink-muted); padding-left: 17px; }
+
+  /* large stepper */
+  .stepper-lg {
+    display: flex;
+    align-items: center;
+    background: var(--field-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .stepper-lg button {
+    width: 48px;
+    height: 48px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+  }
+
+  .stepper-lg button:hover { background: var(--border); }
+
+  .stepper-lg-val {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 52px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* large spacing group */
+  .spacing-group-lg {
+    display: flex;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .sp-btn-lg {
+    flex: 1;
+    height: 46px;
+    background: var(--field-bg);
+    border: none;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink-muted);
+    transition: all 0.12s;
+    text-align: center;
+  }
+
+  .sp-btn-lg:last-child { border-right: none; }
+  .sp-btn-lg.active { background: var(--ink); color: #fff; }
+  .sp-btn-lg:not(.active):hover { background: var(--border); color: var(--ink); }
+
+  /* large swatches */
+  .swatches-lg { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .swatch-lg {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.12s, border-color 0.12s;
+  }
+
+  .swatch-lg:hover { transform: scale(1.1); }
+  .swatch-lg.active { border-color: var(--ink); box-shadow: 0 0 0 2px #fff inset; }
+
+  /* ── PRINT ──────────────────────────────────────── */
   @media print {
     body { background: white; }
-    header, .tabs, .form-panel, .resizer, .style-toolbar, .preview-wrapper > .style-toolbar { display: none !important; }
+    header, .tabs, .form-panel, .divider-handle, .style-toolbar { display: none !important; }
     .main { display: block; height: auto; }
-    .preview-wrapper { overflow: visible; }
-    .preview-panel {
-      background: white;
-      padding: 0;
-      display: block;
-      overflow: visible;
-    }
+    .preview-panel { background: white; display: block; overflow: visible; }
+    .preview-scroll { background: white; padding: 0; display: block; overflow: visible; }
     .page {
       box-shadow: none;
       border-radius: 0;
@@ -771,16 +761,20 @@
     }
   }
 
-  /* ═══ TABLET (720–1024px) ═══ */
-  @media (min-width: 720px) and (max-width: 1024px) {
+  /* ── TABLET ─────────────────────────────────────── */
+  @media (max-width: 1024px) {
     :root { --panel-w: 320px; }
+    .theme-pill { padding: 4px 10px; font-size: 11.5px; }
+    .saved-badge { display: none; }
   }
 
-  /* ═══ MOBILE (<720px) ═══ */
-  @media (max-width: 719px) {
+  /* ── MOBILE ─────────────────────────────────────── */
+  @media (max-width: 720px) {
+    :root { --panel-w: 100%; }
+
     header { padding: 0 14px; gap: 8px; }
     .theme-pills { display: none; }
-    .btn-palette { display: flex; }
+    .btn-mobile-style { display: flex; }
 
     .tabs { display: flex; }
 
@@ -791,25 +785,23 @@
     }
 
     .form-panel {
-      width: 100% !important;
+      width: 100%;
       height: 100%;
       overflow-y: auto;
       border-right: none;
       padding: 16px 16px 40px;
     }
 
-    .preview-wrapper {
-      height: 100%;
-    }
-
-    .style-toolbar { display: none !important; }
-    .resizer { display: none; }
+    .divider-handle { display: none; }
 
     .preview-panel {
+      width: 100%;
       height: 100%;
-      overflow-y: auto;
-      padding: 16px 12px;
     }
+
+    .style-toolbar { display: none; }
+
+    .preview-scroll { padding: 16px 12px; }
 
     .page {
       padding: 28px 22px 40px;
@@ -817,43 +809,43 @@
       min-height: unset;
     }
 
-    .form-panel.hidden, .preview-wrapper.hidden { display: none; }
+    .form-panel.hidden,
+    .preview-panel.hidden { display: none; }
   }
 
   @media (max-width: 480px) {
     .row2 { grid-template-columns: 1fr 80px; }
+    .btn-print { padding: 7px 11px; font-size: 12px; }
   }
 </style>
 </head>
-<body data-theme="classic">
+<body>
 
 <header>
-  <h1>Song Lyrics <span>Maker</span></h1>
+  <h1 class="header-title">Song Lyrics <span>Maker</span></h1>
 
-  <!-- Desktop/tablet: theme pills -->
-  <!-- <div class="theme-pills">
-    <button class="theme-pill active" onclick="setTheme('classic', this)">Classic</button>
-    <button class="theme-pill" onclick="setTheme('sepia', this)">Sepia</button>
-    <button class="theme-pill" onclick="setTheme('modern', this)">Modern</button>
-    <button class="theme-pill" onclick="setTheme('minimal', this)">Minimal</button>
-  </div> -->
+  <div class="theme-pills" id="themePills">
+    <button class="theme-pill active" data-theme="classic">Classic</button>
+    <button class="theme-pill" data-theme="sepia">Sepia</button>
+    <button class="theme-pill" data-theme="modern">Modern</button>
+    <button class="theme-pill" data-theme="minimal">Minimal</button>
+  </div>
 
-  <!-- Mobile: palette button -->
-  <button class="btn-palette" onclick="openSheet()" title="Style options">🎨</button>
-
-  <!-- Print button -->
-  <button class="btn-print-header" onclick="window.print()">🖨️ Print / PDF</button>
+  <div class="header-right">
+    <span class="saved-badge" id="savedBadge">Saved ✓</span>
+    <button class="btn-mobile-style" id="btnMobileStyle" title="Style options">🎨</button>
+    <button class="btn-print" onclick="window.print()">🖨 Print</button>
+  </div>
 </header>
 
-<!-- Mobile tab switcher -->
 <div class="tabs" id="tabs">
   <button class="active" onclick="switchTab('form')">✏️ Edit</button>
   <button onclick="switchTab('preview')">👁 Preview</button>
 </div>
 
-<div class="main" id="mainLayout">
+<div class="main" id="main">
 
-  <!-- FORM PANEL -->
+  <!-- ── FORM ── -->
   <div class="form-panel" id="formPanel">
 
     <div class="section-label">Song details</div>
@@ -891,18 +883,14 @@
       <input type="text" id="f-singers" placeholder="e.g. Lata Mangeshkar, Mohammed Rafi">
     </div>
 
-    <hr class="divider">
+    <hr class="form-divider">
     <div class="section-label">Lyrics</div>
 
     <div class="field">
       <textarea id="f-body" placeholder="Paste or type lyrics here..."></textarea>
     </div>
 
-    <!-- Hint toggle -->
-    <div class="hint-toggle-row">
-      <button class="hint-toggle" id="hintBtn" onclick="toggleHint()" title="Formatting help">?</button>
-      <span class="hint-label">Section labels &amp; duet voice help</span>
-    </div>
+    <button class="hint-toggle" id="hintToggle" onclick="toggleHint()">? Formatting help</button>
 
     <div class="hint-box" id="hintBox">
       <strong>Section labels:</strong> Type <strong>Chorus</strong>, <strong>Bridge</strong>, <strong>Interlude</strong>, <strong>Mukhda</strong>, <strong>Antara</strong>, etc. alone on its own line.<br><br>
@@ -912,66 +900,56 @@
       Leave a blank line between verses.
     </div>
 
-    <!-- <div class="form-footer">
-      <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-      <button class="btn-clear-link" onclick="clearForm()">Clear all fields</button>
-    </div> -->
-
-   <!-- <div class="btn-print-header"> -->
-      <!-- <button class="btn btn-primary" onclick="window.print()">
-        🖨️ Save / Print as PDF
-      </button> -->
-      <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-      <button class="btn-clear-footer" onclick="clearForm()">
-        🗑 Clear all fields
-      </button>
-   <!-- </div> -->
+    <div class="form-footer">
+      <button class="btn-clear" onclick="clearForm()">Clear all fields</button>
+    </div>
 
   </div>
 
-  <!-- RESIZER -->
-  <div class="resizer" id="resizer"></div>
+  <!-- ── DIVIDER ── -->
+  <div class="divider-handle" id="dividerHandle"></div>
 
-  <!-- PREVIEW WRAPPER -->
-  <div class="preview-wrapper" id="previewWrapper">
+  <!-- ── PREVIEW ── -->
+  <div class="preview-panel" id="previewPanel">
 
-    <!-- Style toolbar -->
     <div class="style-toolbar">
-      <!-- Font size stepper -->
-      <div class="toolbar-group">
-        <span class="toolbar-label">Size</span>
-        <div class="size-stepper">
-          <button onclick="changeFontSize(-1)" style="min-width:30px;height:30px;">−</button>
-          <div class="size-val" id="sizeVal">14</div>
-          <button onclick="changeFontSize(1)" style="min-width:30px;height:30px;">+</button>
+
+      <div class="tb-group">
+        <span class="tb-label">Size</span>
+        <div class="stepper">
+          <button onclick="changeSize(-1)" aria-label="Decrease font size">−</button>
+          <span class="stepper-val" id="sizeVal">14</span>
+          <button onclick="changeSize(1)" aria-label="Increase font size">+</button>
         </div>
       </div>
 
-      <div class="toolbar-sep"></div>
+      <div class="tb-sep"></div>
 
-      <!-- Spacing -->
-      <!-- <div class="toolbar-group">
-        <span class="toolbar-label">Spacing</span>
-        <button class="spacing-btn" onclick="setSpacing('compact', this)" title="Compact">≡</button>
-        <button class="spacing-btn active" onclick="setSpacing('normal', this)" title="Normal">☰</button>
-        <button class="spacing-btn" onclick="setSpacing('airy', this)" title="Airy">⠿</button>
+      <div class="tb-group">
+        <span class="tb-label">Spacing</span>
+        <div class="spacing-group">
+          <button class="sp-btn" data-lh="1.75" onclick="setSpacing(this)">Tight</button>
+          <button class="sp-btn active" data-lh="2.15" onclick="setSpacing(this)">Normal</button>
+          <button class="sp-btn" data-lh="2.8" onclick="setSpacing(this)">Airy</button>
+        </div>
       </div>
 
-      <div class="toolbar-sep"></div> -->
+      <div class="tb-sep"></div>
 
-      <!-- Accent color swatches -->
-      <!-- <div class="toolbar-group">
-        <span class="toolbar-label">Accent</span>
-        <button class="swatch active" style="background:#c84b31;" data-color="#c84b31" onclick="setAccent('#c84b31', this)" title="Red"></button>
-        <button class="swatch" style="background:#3b5bdb;" data-color="#3b5bdb" onclick="setAccent('#3b5bdb', this)" title="Blue"></button>
-        <button class="swatch" style="background:#7a4f2f;" data-color="#7a4f2f" onclick="setAccent('#7a4f2f', this)" title="Brown"></button>
-        <button class="swatch" style="background:#2d8a4e;" data-color="#2d8a4e" onclick="setAccent('#2d8a4e', this)" title="Green"></button>
-        <button class="swatch" style="background:#1a1a1a;" data-color="#1a1a1a" onclick="setAccent('#1a1a1a', this)" title="Black"></button>
-      </div> -->
+      <div class="tb-group">
+        <span class="tb-label">Accent</span>
+        <div class="swatches" id="swatchBar">
+          <button class="swatch active" data-color="#c84b31" style="background:#c84b31" onclick="setAccent(this)" aria-label="Red"></button>
+          <button class="swatch" data-color="#3b6ea5" style="background:#3b6ea5" onclick="setAccent(this)" aria-label="Blue"></button>
+          <button class="swatch" data-color="#2a7a4b" style="background:#2a7a4b" onclick="setAccent(this)" aria-label="Green"></button>
+          <button class="swatch" data-color="#7b4ea5" style="background:#7b4ea5" onclick="setAccent(this)" aria-label="Purple"></button>
+          <button class="swatch" data-color="#1a1a2e" style="background:#1a1a2e" onclick="setAccent(this)" aria-label="Dark"></button>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Preview panel -->
-    <div class="preview-panel" id="previewPanel">
+    <div class="preview-scroll">
       <div class="page" id="preview">
         <div class="empty-state">
           <div class="icon">🎵</div>
@@ -979,53 +957,70 @@
         </div>
       </div>
     </div>
-
   </div>
+
 </div>
 
-<!-- Mobile bottom sheet overlay -->
-<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
-
-<!-- Mobile bottom sheet -->
+<!-- ── MOBILE BOTTOM SHEET ── -->
+<div class="bs-overlay" id="bsOverlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
-  <div class="sheet-handle"></div>
+  <div class="bs-handle"></div>
 
-  <!-- <div class="sheet-section-label">Theme</div>
-  <div class="sheet-theme-grid">
-    <button class="sheet-theme-pill active" data-theme-target="classic" onclick="setTheme('classic', this, true)">Classic</button>
-    <button class="sheet-theme-pill" data-theme-target="sepia" onclick="setTheme('sepia', this, true)">Sepia</button>
-    <button class="sheet-theme-pill" data-theme-target="modern" onclick="setTheme('modern', this, true)">Modern</button>
-    <button class="sheet-theme-pill" data-theme-target="minimal" onclick="setTheme('minimal', this, true)">Minimal</button>
-  </div> -->
-
-  <div class="sheet-section-label">Font size</div>
-  <div class="sheet-controls-row">
-    <div class="size-stepper">
-      <button onclick="changeFontSize(-1)" style="min-width:44px;height:44px;font-size:18px;">−</button>
-      <div class="size-val" id="sizeValSheet" style="min-width:44px;height:44px;font-size:15px;">14</div>
-      <button onclick="changeFontSize(1)" style="min-width:44px;height:44px;font-size:18px;">+</button>
+  <div class="bs-section">
+    <div class="bs-lbl">Theme</div>
+    <div class="bs-theme-grid">
+      <button class="bs-theme-btn active" data-theme="classic" onclick="setTheme('classic')">
+        <span class="bs-theme-name"><span class="bs-dot" style="background:#c84b31"></span>Classic</span>
+        <span class="bs-theme-desc">Playfair · Warm</span>
+      </button>
+      <button class="bs-theme-btn" data-theme="sepia" onclick="setTheme('sepia')">
+        <span class="bs-theme-name"><span class="bs-dot" style="background:#8b5e3c"></span>Sepia</span>
+        <span class="bs-theme-desc">Garamond · Warm</span>
+      </button>
+      <button class="bs-theme-btn" data-theme="modern" onclick="setTheme('modern')">
+        <span class="bs-theme-name"><span class="bs-dot" style="background:#3b6ea5"></span>Modern</span>
+        <span class="bs-theme-desc">Inter · Clean</span>
+      </button>
+      <button class="bs-theme-btn" data-theme="minimal" onclick="setTheme('minimal')">
+        <span class="bs-theme-name"><span class="bs-dot" style="background:#1a1a2e"></span>Minimal</span>
+        <span class="bs-theme-desc">Baskerville · Spare</span>
+      </button>
     </div>
   </div>
 
-  <div class="sheet-section-label">Line spacing</div>
-  <div class="sheet-controls-row">
-    <button class="spacing-btn" id="sheetSpacingCompact" style="width:44px;height:44px;font-size:16px;" onclick="setSpacing('compact', this, true)" title="Compact">≡</button>
-    <button class="spacing-btn active" id="sheetSpacingNormal" style="width:44px;height:44px;font-size:16px;" onclick="setSpacing('normal', this, true)" title="Normal">☰</button>
-    <button class="spacing-btn" id="sheetSpacingAiry" style="width:44px;height:44px;font-size:16px;" onclick="setSpacing('airy', this, true)" title="Airy">⠿</button>
+  <div class="bs-section">
+    <div class="bs-lbl">Font Size</div>
+    <div class="stepper-lg">
+      <button onclick="changeSize(-1)" aria-label="Decrease">−</button>
+      <span class="stepper-lg-val" id="bsSizeVal">14</span>
+      <button onclick="changeSize(1)" aria-label="Increase">+</button>
+    </div>
   </div>
 
-  <div class="sheet-section-label">Accent colour</div>
-  <div class="sheet-controls-row" style="gap:10px;">
-    <button class="swatch active" style="width:28px;height:28px;background:#c84b31;" data-color="#c84b31" onclick="setAccent('#c84b31', this)" title="Red"></button>
-    <button class="swatch" style="width:28px;height:28px;background:#3b5bdb;" data-color="#3b5bdb" onclick="setAccent('#3b5bdb', this)" title="Blue"></button>
-    <button class="swatch" style="width:28px;height:28px;background:#7a4f2f;" data-color="#7a4f2f" onclick="setAccent('#7a4f2f', this)" title="Brown"></button>
-    <button class="swatch" style="width:28px;height:28px;background:#2d8a4e;" data-color="#2d8a4e" onclick="setAccent('#2d8a4e', this)" title="Green"></button>
-    <button class="swatch" style="width:28px;height:28px;background:#1a1a1a;" data-color="#1a1a1a" onclick="setAccent('#1a1a1a', this)" title="Black"></button>
+  <div class="bs-section">
+    <div class="bs-lbl">Line Spacing</div>
+    <div class="spacing-group-lg">
+      <button class="sp-btn-lg" data-lh="1.75" onclick="setSpacingLg(this)">Tight</button>
+      <button class="sp-btn-lg active" data-lh="2.15" onclick="setSpacingLg(this)">Normal</button>
+      <button class="sp-btn-lg" data-lh="2.8" onclick="setSpacingLg(this)">Airy</button>
+    </div>
+  </div>
+
+  <div class="bs-section">
+    <div class="bs-lbl">Accent Color</div>
+    <div class="swatches-lg">
+      <button class="swatch-lg active" data-color="#c84b31" style="background:#c84b31" onclick="setAccentLg(this)" aria-label="Red"></button>
+      <button class="swatch-lg" data-color="#3b6ea5" style="background:#3b6ea5" onclick="setAccentLg(this)" aria-label="Blue"></button>
+      <button class="swatch-lg" data-color="#2a7a4b" style="background:#2a7a4b" onclick="setAccentLg(this)" aria-label="Green"></button>
+      <button class="swatch-lg" data-color="#7b4ea5" style="background:#7b4ea5" onclick="setAccentLg(this)" aria-label="Purple"></button>
+      <button class="swatch-lg" data-color="#1a1a2e" style="background:#1a1a2e" onclick="setAccentLg(this)" aria-label="Dark"></button>
+    </div>
   </div>
 </div>
 
 <script>
-/* ═══ CONSTANTS ═══ */
+// ── CONSTANTS ──────────────────────────────────────────────────────────────────
+
 const SECTION_WORDS = [
   'interlude','chorus','bridge','verse','intro','outro',
   'pre-chorus','refrain','coda','instrumental',
@@ -1033,17 +1028,58 @@ const SECTION_WORDS = [
 ];
 const FEMALE_TRIGGERS = ['f', 'female'];
 const MALE_TRIGGERS   = ['m', 'male'];
-
 const FIELDS = ['f-date','f-film','f-year','f-title','f-lyrics','f-music','f-singers','f-body'];
 
-const SPACING_MAP = { compact: 1.65, normal: 2.15, airy: 2.75 };
+const THEMES = {
+  classic: {
+    '--accent':      '#c84b31',
+    '--accent-soft': '#f5ede9',
+    '--female':      '#c84b31',
+    '--bg':          '#f2f0eb',
+    '--paper-bg':    '#ffffff',
+    '--lyric-font':  "'Playfair Display', Georgia, serif",
+    font: null
+  },
+  sepia: {
+    '--accent':      '#8b5e3c',
+    '--accent-soft': '#f5efe0',
+    '--female':      '#8b5e3c',
+    '--bg':          '#ede8df',
+    '--paper-bg':    '#f5efe0',
+    '--lyric-font':  "'EB Garamond', Georgia, serif",
+    font: 'EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,500'
+  },
+  modern: {
+    '--accent':      '#3b6ea5',
+    '--accent-soft': '#e8f0f8',
+    '--female':      '#3b6ea5',
+    '--bg':          '#f0f2f5',
+    '--paper-bg':    '#ffffff',
+    '--lyric-font':  "'Inter', sans-serif",
+    font: 'Inter:wght@300;400;500;600'
+  },
+  minimal: {
+    '--accent':      '#1a1a2e',
+    '--accent-soft': '#f0f0f0',
+    '--female':      '#555577',
+    '--bg':          '#f5f5f5',
+    '--paper-bg':    '#ffffff',
+    '--lyric-font':  "'Libre Baskerville', Georgia, serif",
+    font: 'Libre+Baskerville:ital,wght@0,400;0,700;1,400'
+  }
+};
 
-let currentFontSize = 14;
-let currentSpacing  = 'normal';
-let currentTheme    = 'classic';
-let saveTimer       = null;
+// ── STATE ──────────────────────────────────────────────────────────────────────
 
-/* ═══ UTILS ═══ */
+let currentTheme  = 'classic';
+let currentSize   = 14;
+let currentLH     = 2.15;
+let currentAccent = '#c84b31';
+let savedTimer    = null;
+let isResizing    = false;
+
+// ── HELPERS ────────────────────────────────────────────────────────────────────
+
 function esc(s){
   return String(s)
     .replace(/&/g,'&amp;')
@@ -1051,222 +1087,214 @@ function esc(s){
     .replace(/>/g,'&gt;');
 }
 
-/* ═══ LOCAL STORAGE ═══ */
-function saveToStorage(){
-  const data = {};
-  FIELDS.forEach(id => { data[id] = document.getElementById(id).value; });
-  data._theme   = currentTheme;
-  data._size    = currentFontSize;
-  data._spacing = currentSpacing;
-  data._panelW  = document.getElementById('formPanel').style.width || '';
-  localStorage.setItem('slm_data', JSON.stringify(data));
+function cssVar(k, v){ document.documentElement.style.setProperty(k, v); }
 
-  const indicator = document.getElementById('saveIndicator');
-  indicator.classList.add('show');
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => indicator.classList.remove('show'), 1500);
+// ── LOCALSTORAGE ───────────────────────────────────────────────────────────────
+
+function saveData(){
+  const d = {};
+  FIELDS.forEach(id => d[id] = document.getElementById(id).value);
+  localStorage.setItem('slm-data', JSON.stringify(d));
+  flashSaved();
 }
 
-function loadFromStorage(){
+function loadData(){
   try {
-    const raw = localStorage.getItem('slm_data');
+    const raw = localStorage.getItem('slm-data');
     if(!raw) return;
-    const data = JSON.parse(raw);
-    FIELDS.forEach(id => {
-      if(data[id] !== undefined) document.getElementById(id).value = data[id];
-    });
-    if(data._theme)   restoreTheme(data._theme);
-    if(data._size)    restoreFontSize(data._size);
-    if(data._spacing) restoreSpacing(data._spacing);
-    if(data._panelW)  {
-      document.getElementById('formPanel').style.width = data._panelW;
-    }
+    const d = JSON.parse(raw);
+    FIELDS.forEach(id => { if(d[id] != null) document.getElementById(id).value = d[id]; });
   } catch(e){}
 }
 
-/* ═══ THEME ═══ */
-function setTheme(theme, btn, fromSheet = false){
-  currentTheme = theme;
-  document.body.setAttribute('data-theme', theme);
-
-  // Sync header pills
-  document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
-  const headerPill = document.querySelector(`.theme-pill[onclick*="${theme}"]`);
-  if(headerPill) headerPill.classList.add('active');
-
-  // Sync sheet pills
-  document.querySelectorAll('.sheet-theme-pill').forEach(p => p.classList.remove('active'));
-  const sheetPill = document.querySelector(`.sheet-theme-pill[data-theme-target="${theme}"]`);
-  if(sheetPill) sheetPill.classList.add('active');
-
-  // Reset accent to theme default
-  const defaults = { classic:'#c84b31', sepia:'#7a4f2f', modern:'#3b5bdb', minimal:'#1a1a1a' };
-  if(defaults[theme]) applyAccent(defaults[theme]);
-
-  if(fromSheet) closeSheet();
-  saveToStorage();
+function savePrefs(){
+  localStorage.setItem('slm-prefs', JSON.stringify({
+    theme: currentTheme, size: currentSize, lh: currentLH, accent: currentAccent,
+    panelW: getComputedStyle(document.documentElement).getPropertyValue('--panel-w').trim()
+  }));
 }
 
-function restoreTheme(theme){
-  currentTheme = theme;
-  document.body.setAttribute('data-theme', theme);
-  document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
-  const hp = document.querySelector(`.theme-pill[onclick*="${theme}"]`);
-  if(hp) hp.classList.add('active');
-  document.querySelectorAll('.sheet-theme-pill').forEach(p => p.classList.remove('active'));
-  const sp = document.querySelector(`.sheet-theme-pill[data-theme-target="${theme}"]`);
-  if(sp) sp.classList.add('active');
+function loadPrefs(){
+  try {
+    const raw = localStorage.getItem('slm-prefs');
+    if(!raw) return;
+    const p = JSON.parse(raw);
+    if(p.theme && THEMES[p.theme])  applyTheme(p.theme, true);
+    if(p.size)   { currentSize   = p.size;   applySizeCSS(); }
+    if(p.lh)     { currentLH     = p.lh;     applyLHCSS(); syncSpacingUI(); }
+    if(p.accent) { currentAccent = p.accent; applyAccentCSS(); syncSwatchUI(); }
+    if(p.panelW && window.innerWidth > 720) cssVar('--panel-w', p.panelW);
+  } catch(e){}
 }
 
-/* ═══ FONT SIZE ═══ */
-function changeFontSize(delta){
-  currentFontSize = Math.max(10, Math.min(24, currentFontSize + delta));
-  applyFontSize();
-  saveToStorage();
+// ── SAVED FLASH ────────────────────────────────────────────────────────────────
+
+function flashSaved(){
+  const el = document.getElementById('savedBadge');
+  el.classList.add('show');
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => el.classList.remove('show'), 1500);
 }
 
-function applyFontSize(){
-  document.querySelector('.page').style.setProperty('--lyric-size', currentFontSize + 'px');
-  document.getElementById('sizeVal').textContent = currentFontSize;
-  document.getElementById('sizeValSheet').textContent = currentFontSize;
+// ── THEMES ─────────────────────────────────────────────────────────────────────
+
+function applyTheme(name, skipSave){
+  const t = THEMES[name];
+  if(!t) return;
+  currentTheme  = name;
+  currentAccent = t['--accent'];
+
+  Object.entries(t).forEach(([k,v]) => { if(k !== 'font') cssVar(k, v); });
+
+  const existing = document.getElementById('dyn-font');
+  if(t.font){
+    const lk = existing || document.createElement('link');
+    lk.id   = 'dyn-font';
+    lk.rel  = 'stylesheet';
+    lk.href = `https://fonts.googleapis.com/css2?family=${t.font}&display=swap`;
+    if(!existing) document.head.appendChild(lk);
+  } else if(existing){
+    existing.remove();
+  }
+
+  syncThemeUI();
+  syncSwatchUI();
+  if(!skipSave) savePrefs();
 }
 
-function restoreFontSize(size){
-  currentFontSize = parseInt(size) || 14;
-  applyFontSize();
+function setTheme(name){
+  applyTheme(name);
 }
 
-/* ═══ SPACING ═══ */
-function setSpacing(mode, btn, fromSheet = false){
-  currentSpacing = mode;
-  applySpacing();
-
-  // Sync toolbar spacing buttons
-  document.querySelectorAll('.style-toolbar .spacing-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll(`.style-toolbar .spacing-btn[onclick*="${mode}"]`).forEach(b => b.classList.add('active'));
-
-  // Sync sheet spacing buttons
-  ['compact','normal','airy'].forEach(m => {
-    const el = document.getElementById(`sheetSpacing${m.charAt(0).toUpperCase()+m.slice(1)}`);
-    if(el) el.classList.toggle('active', m === mode);
-  });
-
-  if(fromSheet) closeSheet();
-  saveToStorage();
+function syncThemeUI(){
+  document.querySelectorAll('.theme-pill').forEach(b => b.classList.toggle('active', b.dataset.theme === currentTheme));
+  document.querySelectorAll('.bs-theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === currentTheme));
 }
 
-function applySpacing(){
-  document.querySelector('.page').style.setProperty('--lyric-spacing', SPACING_MAP[currentSpacing]);
+// ── FONT SIZE ──────────────────────────────────────────────────────────────────
+
+function changeSize(d){
+  currentSize = Math.min(24, Math.max(10, currentSize + d));
+  applySizeCSS();
+  savePrefs();
 }
 
-function restoreSpacing(mode){
-  currentSpacing = mode;
-  applySpacing();
-  document.querySelectorAll('.style-toolbar .spacing-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll(`.style-toolbar .spacing-btn[onclick*="${mode}"]`).forEach(b => b.classList.add('active'));
-  ['compact','normal','airy'].forEach(m => {
-    const el = document.getElementById(`sheetSpacing${m.charAt(0).toUpperCase()+m.slice(1)}`);
-    if(el) el.classList.toggle('active', m === mode);
-  });
+function applySizeCSS(){
+  cssVar('--lyric-size', currentSize + 'px');
+  document.getElementById('sizeVal').textContent   = currentSize;
+  document.getElementById('bsSizeVal').textContent = currentSize;
 }
 
-/* ═══ ACCENT COLOR ═══ */
-function applyAccent(color){
-  document.documentElement.style.setProperty('--accent', color);
-  document.documentElement.style.setProperty('--female', color);
-  // Update swatch active states in both toolbar and sheet
-  document.querySelectorAll('.swatch').forEach(s => {
-    s.classList.toggle('active', s.dataset.color === color);
-  });
+// ── LINE HEIGHT ────────────────────────────────────────────────────────────────
+
+function setSpacing(btn){
+  currentLH = parseFloat(btn.dataset.lh);
+  applyLHCSS();
+  syncSpacingUI();
+  savePrefs();
 }
 
-function setAccent(color, btn){
-  applyAccent(color);
-  saveToStorage();
+function setSpacingLg(btn){ setSpacing(btn); }
+
+function applyLHCSS(){ cssVar('--lyric-lh', currentLH); }
+
+function syncSpacingUI(){
+  document.querySelectorAll('.sp-btn, .sp-btn-lg').forEach(b =>
+    b.classList.toggle('active', parseFloat(b.dataset.lh) === currentLH)
+  );
 }
 
-/* ═══ HINT TOGGLE ═══ */
+// ── ACCENT ─────────────────────────────────────────────────────────────────────
+
+function setAccent(btn){
+  currentAccent = btn.dataset.color;
+  applyAccentCSS();
+  syncSwatchUI();
+  savePrefs();
+}
+
+function setAccentLg(btn){ setAccent(btn); }
+
+function applyAccentCSS(){
+  cssVar('--accent',  currentAccent);
+  cssVar('--female',  currentAccent);
+}
+
+function syncSwatchUI(){
+  document.querySelectorAll('.swatch, .swatch-lg').forEach(b =>
+    b.classList.toggle('active', b.dataset.color === currentAccent)
+  );
+}
+
+// ── HINT ───────────────────────────────────────────────────────────────────────
+
 function toggleHint(){
   const box = document.getElementById('hintBox');
-  const btn = document.getElementById('hintBtn');
+  const btn = document.getElementById('hintToggle');
   const open = box.classList.toggle('open');
-  btn.style.background = open ? 'var(--accent-soft)' : '';
-  btn.style.borderColor = open ? 'var(--accent)' : '';
-  btn.style.color = open ? 'var(--accent)' : '';
+  btn.textContent = open ? '✕ Close help' : '? Formatting help';
 }
 
-/* ═══ MOBILE BOTTOM SHEET ═══ */
-function openSheet(){
-  const overlay = document.getElementById('sheetOverlay');
-  const sheet   = document.getElementById('bottomSheet');
-  overlay.style.display = 'block';
-  requestAnimationFrame(() => {
-    overlay.classList.add('open');
-    sheet.classList.add('open');
-  });
-}
+// ── BOTTOM SHEET ───────────────────────────────────────────────────────────────
+
+document.getElementById('btnMobileStyle').addEventListener('click', () => {
+  document.getElementById('bottomSheet').classList.add('show');
+  document.getElementById('bsOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+});
 
 function closeSheet(){
-  const overlay = document.getElementById('sheetOverlay');
-  const sheet   = document.getElementById('bottomSheet');
-  overlay.classList.remove('open');
-  sheet.classList.remove('open');
-  setTimeout(() => { overlay.style.display = 'none'; }, 250);
+  document.getElementById('bottomSheet').classList.remove('show');
+  document.getElementById('bsOverlay').classList.remove('show');
+  document.body.style.overflow = '';
 }
 
-/* ═══ RESIZABLE PANEL ═══ */
-(function(){
-  const resizer   = document.getElementById('resizer');
-  const formPanel = document.getElementById('formPanel');
-  let dragging = false, startX, startW;
+// ── DIVIDER RESIZE ─────────────────────────────────────────────────────────────
 
-  resizer.addEventListener('mousedown', e => {
-    dragging = true;
-    startX = e.clientX;
-    startW = formPanel.offsetWidth;
-    resizer.classList.add('dragging');
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
+const handle = document.getElementById('dividerHandle');
 
-  document.addEventListener('mousemove', e => {
-    if(!dragging) return;
-    const newW = Math.max(260, Math.min(600, startW + e.clientX - startX));
-    formPanel.style.width = newW + 'px';
-  });
+handle.addEventListener('mousedown', e => {
+  if(window.innerWidth <= 720) return;
+  isResizing = true;
+  handle.classList.add('dragging');
+  document.body.style.cursor     = 'col-resize';
+  document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
 
-  document.addEventListener('mouseup', () => {
-    if(!dragging) return;
-    dragging = false;
-    resizer.classList.remove('dragging');
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    saveToStorage();
-  });
-})();
+document.addEventListener('mousemove', e => {
+  if(!isResizing) return;
+  const rect = document.getElementById('main').getBoundingClientRect();
+  const w    = Math.min(Math.max(240, e.clientX - rect.left), rect.width - 260);
+  cssVar('--panel-w', w + 'px');
+});
 
-/* ═══ TAB SWITCHING (MOBILE) ═══ */
+document.addEventListener('mouseup', () => {
+  if(!isResizing) return;
+  isResizing = false;
+  handle.classList.remove('dragging');
+  document.body.style.cursor     = '';
+  document.body.style.userSelect = '';
+  savePrefs();
+});
+
+// ── TAB SWITCHING ──────────────────────────────────────────────────────────────
+
 function switchTab(tab){
-  const formPanel      = document.getElementById('formPanel');
-  const previewWrapper = document.getElementById('previewWrapper');
-  const resizer        = document.getElementById('resizer');
-  const btns           = document.querySelectorAll('.tabs button');
+  const fp = document.getElementById('formPanel');
+  const pp = document.getElementById('previewPanel');
+  const bs = document.querySelectorAll('.tabs button');
   if(tab === 'form'){
-    formPanel.classList.remove('hidden');
-    previewWrapper.classList.add('hidden');
-    resizer.classList.add('hidden');
-    btns[0].classList.add('active');
-    btns[1].classList.remove('active');
+    fp.classList.remove('hidden'); pp.classList.add('hidden');
+    bs[0].classList.add('active'); bs[1].classList.remove('active');
   } else {
-    formPanel.classList.add('hidden');
-    previewWrapper.classList.remove('hidden');
-    resizer.classList.add('hidden');
-    btns[1].classList.add('active');
-    btns[0].classList.remove('active');
+    fp.classList.add('hidden'); pp.classList.remove('hidden');
+    bs[1].classList.add('active'); bs[0].classList.remove('active');
   }
 }
 
-/* ═══ RENDER ═══ */
+// ── RENDER ─────────────────────────────────────────────────────────────────────
+
 function render(){
   const date     = document.getElementById('f-date').value.trim();
   const film     = document.getElementById('f-film').value.trim();
@@ -1277,14 +1305,10 @@ function render(){
   const singers  = document.getElementById('f-singers').value.trim();
   const body     = document.getElementById('f-body').value;
 
-  const anyField = date||film||title||lyricsBy||music||singers||body.trim();
-
-  if(!anyField){
+  if(!(date||film||title||lyricsBy||music||singers||body.trim())){
     document.getElementById('preview').innerHTML = `
-      <div class="empty-state">
-        <div class="icon">🎵</div>
-        <p>Start filling in the details<br>on the left to see your<br>song sheet appear here.</p>
-      </div>`;
+      <div class="empty-state"><div class="icon">🎵</div>
+      <p>Start filling in the details<br>on the left to see your<br>song sheet appear here.</p></div>`;
     return;
   }
 
@@ -1292,8 +1316,7 @@ function render(){
 
   if(date) html += `<div class="song-date">${esc(date)}</div>`;
 
-  const hasMeta = film||title||lyricsBy||music||singers;
-  if(hasMeta){
+  if(film||title||lyricsBy||music||singers){
     html += `<div class="meta-box"><table>`;
     if(film)     html += `<tr><td class="lbl">Film</td><td class="val">${esc(film)}${year?' <em>('+esc(year)+')</em>':''}</td></tr>`;
     if(title)    html += `<tr><td class="lbl">Song</td><td class="val">${esc(title)}</td></tr>`;
@@ -1305,73 +1328,65 @@ function render(){
 
   if(body.trim()){
     html += `<div class="deco-line">♪ &nbsp; L Y R I C S &nbsp; ♪</div>`;
-
     let isFemale = false;
-    const paras = body.split(/\n{2,}/);
 
-    paras.forEach(para => {
+    body.split(/\n{2,}/).forEach(para => {
       const trimmed = para.trim();
       if(!trimmed) return;
       const lines = trimmed.split('\n').map(l => l.trimEnd());
 
       if(lines.length === 1){
-        const lower = lines[0].trim().toLowerCase();
-        if(SECTION_WORDS.includes(lower)){
+        const low = lines[0].trim().toLowerCase();
+        if(SECTION_WORDS.includes(low)){
           html += `<div class="section-lbl">— ${esc(lines[0].trim())} —</div>`;
           return;
         }
-        if(FEMALE_TRIGGERS.includes(lower)){ isFemale = true; return; }
-        if(MALE_TRIGGERS.includes(lower))  { isFemale = false; return; }
+        if(FEMALE_TRIGGERS.includes(low)){ isFemale = true;  return; }
+        if(MALE_TRIGGERS.includes(low))  { isFemale = false; return; }
       }
 
-      let lyricSpans = [];
-
+      let spans = [];
       lines.forEach(line => {
-        const lower = line.trim().toLowerCase();
-        if(FEMALE_TRIGGERS.includes(lower)){ isFemale = true; return; }
-        if(MALE_TRIGGERS.includes(lower))  { isFemale = false; return; }
-        if(SECTION_WORDS.includes(lower)){
-          if(lyricSpans.length){
-            html += `<div class="lyric-block">${lyricSpans.join('<br>')}</div><br>`;
-            lyricSpans = [];
-          }
+        const low = line.trim().toLowerCase();
+        if(FEMALE_TRIGGERS.includes(low)){ isFemale = true;  return; }
+        if(MALE_TRIGGERS.includes(low))  { isFemale = false; return; }
+        if(SECTION_WORDS.includes(low)){
+          if(spans.length){ html += `<div class="lyric-block">${spans.join('<br>')}</div><br>`; spans = []; }
           html += `<div class="section-lbl">— ${esc(line.trim())} —</div>`;
           return;
         }
-        const cls = isFemale ? ' class="female"' : '';
-        lyricSpans.push(`<span${cls}>${esc(line)}</span>`);
+        spans.push(`<span${isFemale?' class="female"':''}>${esc(line)}</span>`);
       });
 
-      if(lyricSpans.length){
-        html += `<div class="lyric-block">${lyricSpans.join('<br>')}</div><br>`;
-      }
+      if(spans.length) html += `<div class="lyric-block">${spans.join('<br>')}</div><br>`;
     });
   }
 
   document.getElementById('preview').innerHTML = html;
 }
 
-/* ═══ CLEAR ═══ */
+// ── CLEAR ──────────────────────────────────────────────────────────────────────
+
 function clearForm(){
   if(!confirm('Clear all fields and start fresh?')) return;
   FIELDS.forEach(id => document.getElementById(id).value = '');
+  localStorage.removeItem('slm-data');
   render();
-  saveToStorage();
 }
 
-/* ═══ INIT ═══ */
+// ── INIT ───────────────────────────────────────────────────────────────────────
+
+loadData();
+loadPrefs();
+render();
+
 FIELDS.forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    render();
-    saveToStorage();
-  });
+  document.getElementById(id).addEventListener('input', () => { render(); saveData(); });
 });
 
-loadFromStorage();
-applyFontSize();
-applySpacing();
-render();
+document.querySelectorAll('.theme-pill').forEach(btn => {
+  btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+});
 </script>
-
 </body>
 </html>
