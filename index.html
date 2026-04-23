@@ -300,7 +300,7 @@
 
   .field input::placeholder, .field textarea::placeholder { color: #c0bdb5; }
 
-  /* ── LYRICS TEXTAREA: fixed height + internal scroll ── */
+  /* ── LYRICS TEXTAREA: fixed height + HIGHLY VISIBLE scrollbar ── */
   .field textarea {
     font-family: 'DM Mono', monospace;
     font-size: 12.5px;
@@ -309,19 +309,43 @@
     height: 320px;
     min-height: 180px;
     max-height: 600px;
-    overflow-y: auto;
-    /* nicer scrollbar */
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    /* `scroll` (not `auto`) forces scrollbar to always render — needed on iOS */
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;    /* smooth momentum scroll on iOS */
+    /* Firefox (desktop & Android) */
+    scrollbar-width: auto;
+    scrollbar-color: var(--accent) var(--accent-soft);
+    /* room for the beefier scrollbar */
+    padding-right: 6px;
   }
 
-  .field textarea::-webkit-scrollbar { width: 8px; }
-  .field textarea::-webkit-scrollbar-track { background: transparent; }
-  .field textarea::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
+  /* WebKit — Chrome, Safari (incl. iOS), Edge, Android Chrome, Samsung Internet */
+  .field textarea::-webkit-scrollbar {
+    width: 14px;
+    -webkit-appearance: none;               /* forces custom style to apply on iOS */
   }
-  .field textarea::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
+  .field textarea::-webkit-scrollbar-track {
+    background: var(--accent-soft);
+    border-radius: 7px;
+    margin: 4px 2px;
+    border: 1px solid var(--border);
+  }
+  .field textarea::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 7px;
+    border: 2px solid var(--accent-soft);   /* inset effect */
+    min-height: 50px;                        /* easy to grab with a fingertip */
+    -webkit-appearance: none;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  }
+  .field textarea::-webkit-scrollbar-thumb:hover,
+  .field textarea::-webkit-scrollbar-thumb:active {
+    background: var(--ink);
+  }
+  /* The little corner where vertical + horizontal would meet */
+  .field textarea::-webkit-scrollbar-corner {
+    background: var(--accent-soft);
+  }
 
   .row2 { display: grid; grid-template-columns: 1fr 90px; gap: 8px; }
 
@@ -835,9 +859,15 @@
 
     .form-panel.hidden, .preview-wrapper.hidden { display: none; }
 
-    /* On mobile let the textarea be a bit shorter */
+    /* On mobile let the textarea be a bit shorter + even chunkier scrollbar */
     .field textarea {
       height: 260px;
+    }
+    .field textarea::-webkit-scrollbar {
+      width: 16px;   /* a touch wider on phones — easier to see and grab */
+    }
+    .field textarea::-webkit-scrollbar-thumb {
+      min-height: 60px;
     }
   }
 
