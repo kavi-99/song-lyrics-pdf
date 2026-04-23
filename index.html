@@ -153,6 +153,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    margin-left: auto;
   }
 
   .btn-print-header:hover {
@@ -299,13 +300,28 @@
 
   .field input::placeholder, .field textarea::placeholder { color: #c0bdb5; }
 
+  /* ── LYRICS TEXTAREA: fixed height + internal scroll ── */
   .field textarea {
     font-family: 'DM Mono', monospace;
     font-size: 12.5px;
     line-height: 1.75;
     resize: vertical;
-    min-height: 260px;
+    height: 320px;
+    min-height: 180px;
+    max-height: 600px;
+    overflow-y: auto;
+    /* nicer scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
+
+  .field textarea::-webkit-scrollbar { width: 8px; }
+  .field textarea::-webkit-scrollbar-track { background: transparent; }
+  .field textarea::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  .field textarea::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
 
   .row2 { display: grid; grid-template-columns: 1fr 90px; gap: 8px; }
 
@@ -818,6 +834,11 @@
     }
 
     .form-panel.hidden, .preview-wrapper.hidden { display: none; }
+
+    /* On mobile let the textarea be a bit shorter */
+    .field textarea {
+      height: 260px;
+    }
   }
 
   @media (max-width: 480px) {
@@ -829,14 +850,6 @@
 
 <header>
   <h1>Song Lyrics <span>Maker</span></h1>
-
-  <!-- Desktop/tablet: theme pills -->
-  <!-- <div class="theme-pills">
-    <button class="theme-pill active" onclick="setTheme('classic', this)">Classic</button>
-    <button class="theme-pill" onclick="setTheme('sepia', this)">Sepia</button>
-    <button class="theme-pill" onclick="setTheme('modern', this)">Modern</button>
-    <button class="theme-pill" onclick="setTheme('minimal', this)">Minimal</button>
-  </div> -->
 
   <!-- Mobile: palette button -->
   <button class="btn-palette" onclick="openSheet()" title="Style options">🎨</button>
@@ -912,20 +925,10 @@
       Leave a blank line between verses.
     </div>
 
-    <!-- <div class="form-footer">
-      <span class="save-indicator" id="saveIndicator">✓ Saved</span>
-      <button class="btn-clear-link" onclick="clearForm()">Clear all fields</button>
-    </div> -->
-
-   <!-- <div class="btn-print-header"> -->
-      <!-- <button class="btn btn-primary" onclick="window.print()">
-        🖨️ Save / Print as PDF
-      </button> -->
       <span class="save-indicator" id="saveIndicator">✓ Saved</span>
       <button class="btn-clear-footer" onclick="clearForm()">
         🗑 Clear all fields
       </button>
-   <!-- </div> -->
 
   </div>
 
@@ -948,26 +951,6 @@
       </div>
 
       <div class="toolbar-sep"></div>
-
-      <!-- Spacing -->
-      <!-- <div class="toolbar-group">
-        <span class="toolbar-label">Spacing</span>
-        <button class="spacing-btn" onclick="setSpacing('compact', this)" title="Compact">≡</button>
-        <button class="spacing-btn active" onclick="setSpacing('normal', this)" title="Normal">☰</button>
-        <button class="spacing-btn" onclick="setSpacing('airy', this)" title="Airy">⠿</button>
-      </div>
-
-      <div class="toolbar-sep"></div> -->
-
-      <!-- Accent color swatches -->
-      <!-- <div class="toolbar-group">
-        <span class="toolbar-label">Accent</span>
-        <button class="swatch active" style="background:#c84b31;" data-color="#c84b31" onclick="setAccent('#c84b31', this)" title="Red"></button>
-        <button class="swatch" style="background:#3b5bdb;" data-color="#3b5bdb" onclick="setAccent('#3b5bdb', this)" title="Blue"></button>
-        <button class="swatch" style="background:#7a4f2f;" data-color="#7a4f2f" onclick="setAccent('#7a4f2f', this)" title="Brown"></button>
-        <button class="swatch" style="background:#2d8a4e;" data-color="#2d8a4e" onclick="setAccent('#2d8a4e', this)" title="Green"></button>
-        <button class="swatch" style="background:#1a1a1a;" data-color="#1a1a1a" onclick="setAccent('#1a1a1a', this)" title="Black"></button>
-      </div> -->
     </div>
 
     <!-- Preview panel -->
@@ -989,14 +972,6 @@
 <!-- Mobile bottom sheet -->
 <div class="bottom-sheet" id="bottomSheet">
   <div class="sheet-handle"></div>
-
-  <!-- <div class="sheet-section-label">Theme</div>
-  <div class="sheet-theme-grid">
-    <button class="sheet-theme-pill active" data-theme-target="classic" onclick="setTheme('classic', this, true)">Classic</button>
-    <button class="sheet-theme-pill" data-theme-target="sepia" onclick="setTheme('sepia', this, true)">Sepia</button>
-    <button class="sheet-theme-pill" data-theme-target="modern" onclick="setTheme('modern', this, true)">Modern</button>
-    <button class="sheet-theme-pill" data-theme-target="minimal" onclick="setTheme('minimal', this, true)">Minimal</button>
-  </div> -->
 
   <div class="sheet-section-label">Font size</div>
   <div class="sheet-controls-row">
@@ -1051,6 +1026,15 @@ function esc(s){
     .replace(/>/g,'&gt;');
 }
 
+/* Sanitize a string so it's safe to use as a filename */
+function sanitizeFilename(name){
+  return String(name)
+    .replace(/[\/\\:*?"<>|]/g, '')   // strip invalid filename chars
+    .replace(/\s+/g, ' ')            // collapse whitespace
+    .trim()
+    .slice(0, 100);                  // keep it reasonable
+}
+
 /* ═══ LOCAL STORAGE ═══ */
 function saveToStorage(){
   const data = {};
@@ -1089,17 +1073,14 @@ function setTheme(theme, btn, fromSheet = false){
   currentTheme = theme;
   document.body.setAttribute('data-theme', theme);
 
-  // Sync header pills
   document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('active'));
   const headerPill = document.querySelector(`.theme-pill[onclick*="${theme}"]`);
   if(headerPill) headerPill.classList.add('active');
 
-  // Sync sheet pills
   document.querySelectorAll('.sheet-theme-pill').forEach(p => p.classList.remove('active'));
   const sheetPill = document.querySelector(`.sheet-theme-pill[data-theme-target="${theme}"]`);
   if(sheetPill) sheetPill.classList.add('active');
 
-  // Reset accent to theme default
   const defaults = { classic:'#c84b31', sepia:'#7a4f2f', modern:'#3b5bdb', minimal:'#1a1a1a' };
   if(defaults[theme]) applyAccent(defaults[theme]);
 
@@ -1141,11 +1122,9 @@ function setSpacing(mode, btn, fromSheet = false){
   currentSpacing = mode;
   applySpacing();
 
-  // Sync toolbar spacing buttons
   document.querySelectorAll('.style-toolbar .spacing-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll(`.style-toolbar .spacing-btn[onclick*="${mode}"]`).forEach(b => b.classList.add('active'));
 
-  // Sync sheet spacing buttons
   ['compact','normal','airy'].forEach(m => {
     const el = document.getElementById(`sheetSpacing${m.charAt(0).toUpperCase()+m.slice(1)}`);
     if(el) el.classList.toggle('active', m === mode);
@@ -1174,7 +1153,6 @@ function restoreSpacing(mode){
 function applyAccent(color){
   document.documentElement.style.setProperty('--accent', color);
   document.documentElement.style.setProperty('--female', color);
-  // Update swatch active states in both toolbar and sheet
   document.querySelectorAll('.swatch').forEach(s => {
     s.classList.toggle('active', s.dataset.color === color);
   });
@@ -1358,6 +1336,29 @@ function clearForm(){
   render();
   saveToStorage();
 }
+
+/* ═══ PRINT: set document.title to song name so PDFs save with that filename ═══ */
+const _ORIGINAL_DOC_TITLE = document.title;
+
+window.addEventListener('beforeprint', () => {
+  const songTitle = document.getElementById('f-title').value.trim();
+  const film      = document.getElementById('f-film').value.trim();
+  const singers   = document.getElementById('f-singers').value.trim();
+
+  // Build a sensible filename: prefer song title, fallback to film, then singers, then default.
+  let name = songTitle || film || singers || 'Song Lyrics';
+
+  // If we have both a song and a film, make it "Song — Film" for clarity
+  if(songTitle && film){
+    name = `${songTitle} — ${film}`;
+  }
+
+  document.title = sanitizeFilename(name) || 'Song Lyrics';
+});
+
+window.addEventListener('afterprint', () => {
+  document.title = _ORIGINAL_DOC_TITLE;
+});
 
 /* ═══ INIT ═══ */
 FIELDS.forEach(id => {
