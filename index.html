@@ -488,14 +488,13 @@
   /* ═══ PRINT ═══ */
   @media print {
     body { background: white; }
-    /* FIX: added .bottom-sheet, .sheet-overlay, .btn-palette so mobile style controls
-       don't appear in print/PDF output */
     header, .tabs, .form-panel, .resizer, .style-toolbar, .preview-wrapper > .style-toolbar,
     .bottom-sheet, .sheet-overlay, .btn-palette { display: none !important; }
-    .main { display: block; height: auto; }
-    .preview-wrapper { overflow: visible; }
-    .preview-panel { background: white; padding: 0; display: block; overflow: visible; }
-    .page { box-shadow: none; border-radius: 0; max-width: 100%; min-height: auto; padding: 10mm 16mm; }
+    /* Override mobile height/overflow constraints so all lyrics pages print */
+    .main { display: block !important; height: auto !important; overflow: visible !important; }
+    .preview-wrapper { display: block !important; height: auto !important; overflow: visible !important; }
+    .preview-panel { display: block !important; height: auto !important; overflow: visible !important; background: white; padding: 0; }
+    .page { box-shadow: none; border-radius: 0; max-width: 100%; min-height: auto !important; height: auto !important; padding: 10mm 16mm; }
   }
 
   /* ═══ TABLET ═══ */
